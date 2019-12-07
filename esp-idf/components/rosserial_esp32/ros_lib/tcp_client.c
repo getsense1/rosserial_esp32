@@ -31,7 +31,7 @@
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
 #define EXAMPLE_WIFI_SSID "APgetsense"
-#define EXAMPLE_WIFI_PASS "1111111111"
+#define EXAMPLE_WIFI_PASS "12345"
 
 
 #ifdef CONFIG_EXAMPLE_IPV4
