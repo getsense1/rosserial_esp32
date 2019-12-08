@@ -2,7 +2,7 @@
 
 
 This [rosserial](http://wiki.ros.org/rosserial) ros_lib ESP32 port 
-that enable communication between ROS(Kinetic on Ubuntu Trusty 14.04 LTS) node and ESP32(not the Andruino framework) using ESP-IDF TCP stack.
+that enable communication between ROS(Kinetic on Ubuntu Trusty 14.04 LTS) node and ESP32(not the Arduino framework) using ESP-IDF TCP stack.
 
 
 ```
