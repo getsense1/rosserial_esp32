@@ -555,7 +555,7 @@ public:
     }
     else
     {
-      logerror("Message from device dropped: message larger than buffer.");
+      ESP_LOGE(TAG2, "Message from device dropped: message larger than buffer.");
       return -1;
     }
   }
