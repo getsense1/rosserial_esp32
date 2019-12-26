@@ -44,6 +44,9 @@
 
 #define PORT "11411"
 
+enum ros_conn { _OK, _ERR };
+static enum ros_conn _ros_conn;
+
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
 static EventGroupHandle_t wifi_event_group;
 
@@ -129,6 +132,7 @@ unsigned char _conn_ros(void){
     struct in_addr *addr;
     int ip_protocol;
 
+        _ros_conn=_ERR;
         int err = getaddrinfo(HOST_IP_ADDR, PORT, &hints, &res);
 
         if(err != 0 || res == NULL) {
@@ -158,25 +162,32 @@ unsigned char _conn_ros(void){
         }
         ESP_LOGI(TAG, "Socket created");
         fcntl(sock,F_SETFL,O_NONBLOCK);
-
-        err = connect(sock, res->ai_addr, res->ai_addrlen);
-        if ((err != 0) && (errno!=119)) {
-            ESP_LOGE(TAG, "Socket unable to connect: errno %d", errno);
-            return 0x0;
-        }
+        do {
+            err = connect(sock, res->ai_addr, res->ai_addrlen);
+            //ESP_LOGE(TAG, "connect: errno %d", errno);
+            if (errno==ENOTCONN) {
+                ESP_LOGE(TAG, "Socket unable to connect");
+                return 0x0;
+            }
+        } while(errno!=EISCONN);
         ESP_LOGI(TAG, "Successfully connected");
+        _ros_conn=_OK;
 
         return 0x01;
 }
 
 
-unsigned char _ros_recv(unsigned char *p_buff,unsigned short _size){
+int _ros_recv(unsigned char *p_buff,unsigned short _size){
+
+        if(_ros_conn==_ERR){
+            return -2;
+        }
 
         int len = recv(sock, p_buff, _size, 0);
             // Error occured during receiving
         if (len < 0) {
             //ESP_LOGE(TAG, "recv failed\n");
-            return 0x0;
+            return -1;
         }
 
         return 0x01;
@@ -184,11 +195,15 @@ unsigned char _ros_recv(unsigned char *p_buff,unsigned short _size){
 
 int _ros_send(unsigned char *p_buff,size_t _size){
 
+        if(_ros_conn==_ERR){
+            return -2;
+        }
+
         int err = send(sock, p_buff, _size, 0);
             // Error occured during receiving
         if (err < 0) {
             //ESP_LOGE(TAG, "Error occured during sending\n");
-            return 0x0;
+            return -1;
         }
 
         return err;

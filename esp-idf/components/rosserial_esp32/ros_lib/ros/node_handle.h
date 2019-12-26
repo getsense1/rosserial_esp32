@@ -253,7 +253,14 @@ public:
           return SPIN_TIMEOUT;
         }
       }
-      int data = hardware_.read();
+      int data=0,_res;
+      _res = hardware_.read(&data);
+      if(_res==-1){
+        break;
+      }
+      if(_res==-2){
+        return SPIN_ERR;
+      }
       if (data < 0)
         break;
       checksum_ += data;

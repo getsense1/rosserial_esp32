@@ -40,15 +40,16 @@ class ESP32Hardware
         }
 
         // read a byte from the serial port. -1 = failure
-        int read(){
+        int read(int *_data){
             int _res;
             _res = _ros_recv((unsigned char *)rx_buf,1);
             if (_res == 1) {
                  //ESP_LOGE(TAG, "recv buf->%x",rx_buf[0]);
-                return rx_buf[0];
+                *_data = rx_buf[0];
+                return 0x1;
             } else {
                 //ESP_LOGE(TAG, "Recv from ROS faild");
-                return -1;
+                return _res;
             }
         }
 
